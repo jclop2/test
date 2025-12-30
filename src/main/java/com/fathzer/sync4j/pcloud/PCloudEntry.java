@@ -29,12 +29,11 @@ abstract class PCloudEntry implements Entry {
     protected PCloudEntry(@Nullable String parentPath , @Nullable Folder parent, @Nonnull RemoteEntry remoteEntry, @Nonnull PCloudProvider provider) {
     	if (parentPath!=null) {
             provider.checkPath(parentPath);
+        } else if (parent!=null) {
+            throw new IllegalArgumentException("Parent entry must be null if parent is null");
         }
         this.parentPath = parentPath;
         this.parent = parent;
-        if (isRoot() && parent!=null) {
-            throw new IllegalArgumentException("Parent entry must be null for root entry");
-        }
         this.remoteEntry = Objects.requireNonNull(remoteEntry);
         this.provider = Objects.requireNonNull(provider);
     }

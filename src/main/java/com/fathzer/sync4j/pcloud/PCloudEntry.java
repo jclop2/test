@@ -25,6 +25,7 @@ abstract class PCloudEntry implements Entry {
      * @param parent the parent entry, null if the parent entry is unknown (typically if created by a direct get) or if the entry is the root.
      * @param remoteEntry the remote entry.
      * @param provider the provider.
+     * @throws IllegalArgumentException if parentPath is invalid or, parentPath is null and parent != null
      */
     protected PCloudEntry(@Nullable String parentPath , @Nullable Folder parent, @Nonnull RemoteEntry remoteEntry, @Nonnull PCloudProvider provider) {
     	if (parentPath!=null) {

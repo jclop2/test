@@ -16,7 +16,7 @@ import jakarta.annotation.Nullable;
 
 class PCloudFolder extends PCloudEntry implements Folder {
     private boolean recursivlyLoaded;
-    
+
     /**
      * Constructor.
      * @param parentPath the path of the parent folder, null if the entry is the root.

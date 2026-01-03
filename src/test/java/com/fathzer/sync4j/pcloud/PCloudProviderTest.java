@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -68,7 +67,7 @@ class PCloudProviderTest extends AbstractFileProviderTest {
         return Zone.valueOf(System.getProperty("pcloud.zone", "US").toUpperCase());
     }
 
-    private PCloud getPCloud() throws IOException {
+    private static PCloud getPCloud() throws IOException {
         if (pcloud == null) {
             pcloud = new PCloudAPI(getZone(), System.getProperty("pcloud.token"));
         }
@@ -99,20 +98,10 @@ class PCloudProviderTest extends AbstractFileProviderTest {
     protected UnderlyingFileSystem getUnderlyingFileSystem() {
     	// Reuse the global file system instance to reduce the number of clients connected to pCloud
     	try {
-	        ApiClient apiClient = getFieldValue(getPCloud(), "sdk", ApiClient.class);
+	        ApiClient apiClient = ((PCloudAPI)getPCloud()).getSdk();
 	        return new PCloudFileSystem(apiClient, "/" + testFolder.name());
     	} catch (IOException e) {
     		throw new UncheckedIOException(e);
     	}
-    }
-
-    private static <T> T getFieldValue(Object object, String fieldName, Class<T> fieldType) {
-        try {
-            Field field = object.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return fieldType.cast(field.get(object));
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get field " + fieldName, e);
-        }
     }
 }

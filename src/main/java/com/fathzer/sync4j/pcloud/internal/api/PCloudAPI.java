@@ -84,10 +84,6 @@ public class PCloudAPI implements PCloud {
         this.token = token;
         this.httpClient = httpClient;
     }
-
-    private OkHttpClient getClient() {
-        return this.httpClient;
-    }
     
     /**
      * Gets the underlying pCloud SDK instance.
@@ -147,7 +143,7 @@ public class PCloudAPI implements PCloud {
     }
 
     private JsonObject getJson(Request request) throws IOException {
-        try (Response response = this.getClient().newCall(request).execute()) {
+        try (Response response = this.httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
                 throw new IOException("Unexpected response " + response + ": " + response.body().string());
             }

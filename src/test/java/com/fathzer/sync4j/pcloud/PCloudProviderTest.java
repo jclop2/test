@@ -113,6 +113,7 @@ class PCloudProviderTest extends AbstractFileProviderTest {
                     int errorCode = apiError.errorCode();
                     if (tryCount != 0 && errorCode == 2005) {
                         // If folder does not exists after a retry, delete operation is successful
+                    	System.err.println("Folder vanished after " + tryCount + " try, making API to reply by 2005 error code"); //TODO Remove
                         return;
                     } else if (errorCode >= 5000 && tryCount < 2) {
                         tryAgain = true;
@@ -123,7 +124,7 @@ class PCloudProviderTest extends AbstractFileProviderTest {
                 }
                 tryCount++;
                 try {
-                    System.err.println("Let's try to cleanup again after " + tryCount + " try");
+System.err.println("Let's try to cleanup again after " + tryCount + " try"); //TODO Remove
                 	Thread.sleep(500);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ import com.fathzer.sync4j.pcloud.internal.api.PCloud;
 import com.fathzer.sync4j.pcloud.internal.api.PCloudAPI;
 import com.fathzer.sync4j.test.AbstractFileProviderTest;
 import com.fathzer.sync4j.test.UnderlyingFileSystem;
-
+import com.pcloud.sdk.ApiClient;
 import com.pcloud.sdk.RemoteFolder;
 
 @EnabledIfSystemProperty(named = "pcloud.token", matches = ".+")
@@ -95,6 +97,22 @@ class PCloudProviderTest extends AbstractFileProviderTest {
 
     @Override
     protected UnderlyingFileSystem getUnderlyingFileSystem() {
-        return new PCloudFileSystem(getZone(), getToken(), "/" + testFolder.name());
+    	// Reuse the global file system instance to reduce the number of clients connected to pCloud
+    	try {
+	        ApiClient apiClient = getFieldValue(getPCloud(), "sdk", ApiClient.class);
+	        return new PCloudFileSystem(apiClient, "/" + testFolder.name());
+    	} catch (IOException e) {
+    		throw new UncheckedIOException(e);
+    	}
+    }
+
+    private static <T> T getFieldValue(Object object, String fieldName, Class<T> fieldType) {
+        try {
+            Field field = object.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return fieldType.cast(field.get(object));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get field " + fieldName, e);
+        }
     }
 }
